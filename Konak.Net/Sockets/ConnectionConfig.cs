@@ -33,18 +33,18 @@ namespace Konak.Net.Sockets
         none = 0, ssl = 1
     }
 
-    public struct ConnectionConfig
+    public class ConnectionConfig
     {
-        public struct ConnectionCertificateConfig
+        public class ConnectionCertificateConfig
         {
-            public X509Certificate2 Certificate { get; set; }
-            public string CertificateFilePath { get; set; }
-            public RemoteCertificateValidationCallback CertValidationCallback { get; set; }
+            public X509Certificate2 Certificate { get; set; } = null;
+            public string CertificateFilePath { get; set; } = string.Empty;
+            public RemoteCertificateValidationCallback CertValidationCallback { get; set; } = null;
         }
 
-        public struct ConnectionNetworkConfig
+        public class ConnectionNetworkConfig
         {
-            public Socket Socket { get; set; }
+            public Socket Socket { get; set; } = null;
             public AddressFamily AddressFamily { get; set; }
             public ProtocolType ProtocolType { get; set; }
             public SocketType SocketType { get; set; }

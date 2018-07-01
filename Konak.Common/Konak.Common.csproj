@@ -45,27 +45,10 @@
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Cryptography\HashGenerator.cs" />
     <Compile Include="Cryptography\PasswordGenerator.cs" />
-    <Compile Include="Exceptions\ConfigurationException.cs" />
-    <Compile Include="Exceptions\GenericException.cs" />
-    <Compile Include="Exceptions\SqlExecutionException.cs" />
-    <Compile Include="Exceptions\SqlExecutionReturnedErrorCodeException.cs" />
+    <Compile Include="Helpers\ByteArrayHelpers.cs" />
     <Compile Include="Helpers\CommonHelpers.cs" />
+    <Compile Include="Helpers\ConcurrentSortedList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Exceptions\ConfigurationException.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ConfigurationException.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Exceptions\SqlExecutionException.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SqlExecutionException.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Exceptions\SqlExecutionReturnedErrorCodeException.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>SqlExecutionReturnedErrorCodeException.resx</DependentUpon>
-    </Compile>
     <Compile Include="Search\FilterSet.cs" />
     <Compile Include="Search\Filter.cs" />
     <Compile Include="Search\IIndexable.cs" />
@@ -75,20 +58,7 @@
     <Compile Include="Search\SearchIndexKeyBase.cs" />
     <Compile Include="Search\SearchIndexBase.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Exceptions\ConfigurationException.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConfigurationException.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Exceptions\SqlExecutionException.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqlExecutionException.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Exceptions\SqlExecutionReturnedErrorCodeException.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>SqlExecutionReturnedErrorCodeException.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

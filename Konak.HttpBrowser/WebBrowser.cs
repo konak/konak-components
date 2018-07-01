@@ -35,13 +35,13 @@ namespace Konak.HttpBrowser
 
     public class WebBrowser
     {
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         #region private properties
         private CookieContainer _cookieContainer = new CookieContainer();
         private WebHeaderCollection _webHeaders = new WebHeaderCollection();
         private byte[] _data = new byte[0];
         private object _synchRoot = new object();
-
-        
         #endregion
 
         #region public events
@@ -86,10 +86,13 @@ namespace Konak.HttpBrowser
                 {
                     d.DynamicInvoke(this, exception);
                 }
-                catch { }
-            }
+                catch(Exception ex)
+                {
+                    log.Error("Error delegate dynamic invoke failed. Error Exception: ", exception);
+                    log.Error("Error delegate dynamic invoke failed. Invoke Exception: ", ex);
 
-            Root.RaiseComponentErrorEvent(this, exception);
+                }
+            }
         }
         #endregion
 
@@ -117,23 +120,19 @@ namespace Konak.HttpBrowser
                     _cookieContainer.SetCookies(this.BaseUri, coockie);
         }
 
-        public void Navigate(object requestResource)
-        {
-            throw new NotImplementedException();
-        }
-
         public void LoadCoockies(CookieContainer container)
         {
             if (!CH.IsEmpty(container))
                 foreach (Cookie cookie in container.GetCookies(this.BaseUri))
                     this._cookieContainer.Add(cookie);
         }
+        #endregion
 
+        #region GetCoockies
         public CookieContainer GetCoockies()
         {
             return _cookieContainer;
         }
-
         #endregion
 
         #region ClearCoockies
@@ -219,7 +218,17 @@ namespace Konak.HttpBrowser
         }
         private HttpWebRequest GetWebRequestObject(Uri uri)
         {
-            HttpWebRequest req = (HttpWebRequest)HttpWebRequest.Create(uri);
+            HttpWebRequest req;
+
+            try
+            {
+                req = (HttpWebRequest)HttpWebRequest.Create(uri);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error creating HttpWebRequest instance.", ex);
+                return null;
+            }
 
             //NetworkCredential nc = new NetworkCredential("Anonymous", string.Empty);
 
@@ -409,29 +418,37 @@ namespace Konak.HttpBrowser
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex);
+                log.Info("Unable to get data encoding.", ex);
 
                 this.DataEncoding = (Encoding)this.DefaultEncoding.Clone();
             }
 
-            using (Stream dataStream = Helpers.StreamHelper.GetContentEncodingReadStream(resp.ContentEncoding, resp.GetResponseStream()))
+            try
             {
-                if (!keepAlive)
-                    dataStream.ReadTimeout = Root.CONFIG.Settings.Browser.ResponseTimeout;
-
-                byte[] buf = new byte[102400];
-                int readBytes = 0;
-                int dataLength = 0;
-
-                while ((readBytes = dataStream.Read(buf, 0, buf.Length)) > 0)
+                using (Stream dataStream = Helpers.StreamHelper.GetContentEncodingReadStream(resp.ContentEncoding, resp.GetResponseStream()))
                 {
-                    dataLength = this._data.Length;
+                    if (!keepAlive)
+                        dataStream.ReadTimeout = Root.CONFIG.Settings.Browser.ResponseTimeout;
 
-                    Array.Resize<byte>(ref this._data, dataLength + readBytes);
-                    Array.Copy(buf, 0, this._data, dataLength, readBytes);
+                    byte[] buf = new byte[102400];
+                    int readBytes = 0;
+                    int dataLength = 0;
+
+                    while ((readBytes = dataStream.Read(buf, 0, buf.Length)) > 0)
+                    {
+                        dataLength = this._data.Length;
+
+                        Array.Resize<byte>(ref this._data, dataLength + readBytes);
+                        Array.Copy(buf, 0, this._data, dataLength, readBytes);
+                    }
+
+                    dataStream.Close();
                 }
-
-                dataStream.Close();
+            }
+            catch (Exception ex)
+            {
+                log.Error("Error reading response stream.", ex);
+                RaireBrowserNavigationErrorEvent(ex);
             }
 
         }
@@ -473,26 +490,42 @@ namespace Konak.HttpBrowser
                 }
                 catch (WebException ex)
                 {
-                    ReadResponseData(ex.Response as HttpWebResponse, req.KeepAlive);
-                    
-                    throw;
+                    log.Error("WebException on getting response.", ex);
+
+                    try
+                    {
+                        ReadResponseData(ex.Response as HttpWebResponse, req.KeepAlive);
+                    }
+                    catch (Exception exx)
+                    {
+                        log.Error("Error reading error response data.", exx);
+                    }
+
+                    return false;
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine(ex);
-                    throw;
+                    log.Error("Exception on getting response.", ex);
+                    return false;
                 }
 
-                ReadResponseData(resp, req.KeepAlive);
+                try
+                {
+                    ReadResponseData(resp, req.KeepAlive);
+                }
+                catch (Exception ex)
+                {
+                    log.Error("Error reading response data.", ex);
+                }
 
                 this._cookieContainer = req.CookieContainer;
 
                 navigationResult = true;
             }
-            catch (Exception ex)
+            catch (Exception exxx)
             {
-                System.Diagnostics.Debug.WriteLine(ex);
-                throw;
+                log.Error("Error getting WebRequest object.", exxx);
+                return false;
             }
             finally
             {

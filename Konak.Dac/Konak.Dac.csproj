@@ -41,42 +41,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\ConfigSection.cs" />
-    <Compile Include="Configuration\DACSettings.cs" />
     <Compile Include="DAC.cs" />
-    <Compile Include="DacSqlParameters.cs" />
-    <Compile Include="Delegates.cs" />
+    <Compile Include="DB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources\Exception\Messages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\Messages.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Exception\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Konak.Common.Standard\Konak.Common.Standard.csproj">
+      <Project>{a9cb431d-56f7-4c6d-9ff7-282a40821d2f}</Project>
+      <Name>Konak.Common.Standard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Konak.Common\Konak.Common.csproj">
       <Project>{7e3bad5c-18b5-49c1-aaa2-e4a9a8a70d2c}</Project>
       <Name>Konak.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Konak.Dac.Standard\Konak.Dac.Standard.csproj">
+      <Project>{a74303e6-f6e4-45d5-9f31-179332bb19b6}</Project>
+      <Name>Konak.Dac.Standard</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

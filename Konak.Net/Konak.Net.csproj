@@ -34,28 +34,41 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\SocketGenericException.cs" />
+    <Compile Include="Exceptions\SocketMessageFrameException.cs" />
+    <Compile Include="Helpers\ByteArrayHelpers.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Host.cs" />
+    <Compile Include="IClient.cs" />
+    <Compile Include="IConnection.cs" />
+    <Compile Include="IServer.cs" />
+    <Compile Include="Sockets\Client.cs" />
+    <Compile Include="Sockets\ConnectionBase.cs" />
+    <Compile Include="Sockets\Delegates.cs" />
+    <Compile Include="Sockets\Server.cs" />
+    <Compile Include="Sockets\SocketConnection.cs" />
+    <Compile Include="Sockets\TCP\TCPDefinitions.cs" />
+    <Compile Include="Sockets\TCP\TCPFrame.cs" />
     <Compile Include="Messages\KonakMessageBase.cs" />
     <Compile Include="Messages\KonakMessageResponse.cs" />
     <Compile Include="Messages\KonakMessageRequest.cs" />
+    <Compile Include="Sockets\TCP\TCPMessage.cs" />
     <Compile Include="Messages\MessageDefinitions.cs" />
     <Compile Include="Sockets\Connection.cs" />
-    <Compile Include="Sockets\IKonakNetStream.cs" />
     <Compile Include="Sockets\ConnectionConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicDelegates.cs" />
     <Compile Include="Root.cs" />
-    <Compile Include="Sockets\Socket.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Konak.Common.Standard\Konak.Common.Standard.csproj">
+      <Project>{a9cb431d-56f7-4c6d-9ff7-282a40821d2f}</Project>
+      <Name>Konak.Common.Standard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Konak.Common\Konak.Common.csproj">
       <Project>{7e3bad5c-18b5-49c1-aaa2-e4a9a8a70d2c}</Project>
       <Name>Konak.Common</Name>

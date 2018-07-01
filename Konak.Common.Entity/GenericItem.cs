@@ -8,7 +8,7 @@ namespace Konak.Common.Entity
 {
     public class GenericItem
     {
-        public Guid RID { get; set; }
+        public Guid ID { get; set; }
         public string Name { get; set; }
     }
 }

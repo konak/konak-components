@@ -7,8 +7,8 @@ using Konak.Common.Caching;
 
 namespace Konak.Common.Search
 {
-    public abstract class SearchIndexBase<TValue> : Cache<string, TValue>, ISearchIndex<TValue>, ISearchIndexRepositoryItem
-    where TValue : IIndexable
+    public abstract class SearchIndexBase<TKey, TValue> : Cache<string, TValue>, ISearchIndex<TKey, TValue>, ISearchIndexRepositoryItem
+    where TValue : IIndexable<TKey>
     {
         internal SearchIndexKeyBase Key { get; }
 
@@ -18,12 +18,12 @@ namespace Konak.Common.Search
         }
 
 
-        public void ManageItemAddedOrUpdated(object source, Guid key, TValue value)
+        public void ManageItemAddedOrUpdated(object source, TKey key, TValue value)
         {
             AddIndexItem((TValue)value);
         }
 
-        public void ManageItemRemoved(object source, Guid key, TValue value)
+        public void ManageItemRemoved(object source, TKey key, TValue value)
         {
             RemoveIndexItem((TValue)value);
         }

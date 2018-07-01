@@ -8,7 +8,7 @@ using Konak.Common.Search;
 
 namespace Konak.Common.Entity
 {
-    public class User : GenericItem, IIndexable
+    public class User : GenericItem, IIndexable<Guid>
     {
         #region IIndexable interface methods implementation
         public virtual string GetKey(string[] orderingFields)
@@ -28,7 +28,7 @@ namespace Konak.Common.Entity
                 }
             }
 
-            sb.Append("_").Append(RID);
+            sb.Append("_").Append(ID);
 
             return sb.Remove(0, 1).ToString();
         }

@@ -9,6 +9,7 @@ namespace Konak.Net.Helpers
 {
     public static class NetworkHelper
     {
+        internal static Encoding DATA_ENCODING = Encoding.UTF8;
 
     }
 }

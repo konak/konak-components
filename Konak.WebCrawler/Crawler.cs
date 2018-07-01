@@ -71,21 +71,25 @@ namespace Konak.WebCrawler
         {
             _jobs.Enqueue(jobItem);
 
-            lock(_sync)
+            System.Diagnostics.Debug.WriteLine("Crawler.AddJob entering lock");
+            lock (_sync)
+            {
+                System.Diagnostics.Debug.WriteLine("Crawler.AddJob lock entered");
+
                 if (_processingJobs)
                     return;
-                else
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(JobProcessingThread));
+
+                _processingJobs = true;
+
+                System.Diagnostics.Debug.WriteLine("Crawler.AddJob relising lock");
+            }
+            System.Diagnostics.Debug.WriteLine("Crawler.AddJob lock released");
+
+            ThreadPool.QueueUserWorkItem(new WaitCallback(JobProcessingThread));
         }
 
         protected void JobProcessingThread(object arguments)
         {
-            lock (_sync)
-                if (_processingJobs)
-                    return;
-                else
-                    _processingJobs = true;
-
             ICrawlerJobItem job;
 
             try
@@ -105,8 +109,14 @@ namespace Konak.WebCrawler
             }
             finally
             {
-                lock(_sync)
+                System.Diagnostics.Debug.WriteLine("Crawler.JobProcessingThread entering lock");
+                lock (_sync)
+                {
+                    System.Diagnostics.Debug.WriteLine("Crawler.JobProcessingThread lock entered");
                     _processingJobs = false;
+                    System.Diagnostics.Debug.WriteLine("Crawler.JobProcessingThread releasing lock");
+                }
+                System.Diagnostics.Debug.WriteLine("Crawler.JobProcessingThread lock released");
             }
         }
 

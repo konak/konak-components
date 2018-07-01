@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -75,10 +79,17 @@
     <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Konak.Common.Standard\Konak.Common.Standard.csproj">
+      <Project>{a9cb431d-56f7-4c6d-9ff7-282a40821d2f}</Project>
+      <Name>Konak.Common.Standard</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Konak.Common\Konak.Common.csproj">
       <Project>{7e3bad5c-18b5-49c1-aaa2-e4a9a8a70d2c}</Project>
       <Name>Konak.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

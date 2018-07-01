@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Konak.Net.Messages
 {
+    
+
     public enum KonakMessageType
     {
         request,

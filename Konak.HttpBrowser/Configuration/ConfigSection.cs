@@ -31,7 +31,7 @@ namespace Konak.HttpBrowser.Configuration
             }
             catch (Exception ex)
             {
-                Root.RaiseComponentErrorEvent(res, new Konak.Common.Exceptions.ConfigurationException(Resources.ErrorMessages.CONFIGURATION_UNABLE_TO_LOAD_BROWSER_CONFIGURATION_SECTION + " " + ex.Message, ex));
+                throw new Konak.Common.Exceptions.ConfigurationException(Resources.ErrorMessages.CONFIGURATION_UNABLE_TO_LOAD_BROWSER_CONFIGURATION_SECTION + " " + ex.Message, ex);
             }
 
             if (res == null)

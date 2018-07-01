@@ -12,11 +12,11 @@ namespace Konak.Common.Search
         desc = 2
     }
 
-    public interface ISearchIndex<TValue>
+    public interface ISearchIndex<TKey, TValue>
     {
-        void ManageItemAddedOrUpdated(object source, Guid key, TValue value);
+        void ManageItemAddedOrUpdated(object source, TKey key, TValue value);
 
-        void ManageItemRemoved(object source, Guid key, TValue value);
+        void ManageItemRemoved(object source, TKey key, TValue value);
 
         void Init(IEnumerable<TValue> source);
 
