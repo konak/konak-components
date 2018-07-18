@@ -3,6 +3,23 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Konak.Dac</RootNamespace>
+    <Authors>Konakov Sergey</Authors>
+    <Company>Konak</Company>
+    <Copyright>Konakov Sergey</Copyright>
+    <Description>Library containing Data Access Component common classies and functionality that can be used in .NET and .NET core libraries</Description>
+    <PackageProjectUrl>https://github.com/konak/konak-components/tree/master/Konak.Dac.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/konak/konak-components/tree/master/Konak.Dac.Standard</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>konak dac</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Konak.Dac.Standard.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

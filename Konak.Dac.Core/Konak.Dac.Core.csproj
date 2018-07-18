@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Konakov Sergey</Authors>
+    <Copyright>Konakov Sergey</Copyright>
+    <Company>Konak</Company>
+    <Description>Data Access Component that makes it easy to setup and query data from SQL server.</Description>
+    <PackageProjectUrl>https://github.com/konak/konak-components/tree/master/Konak.Dac.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/konak/konak-components/tree/master/Konak.Dac.Core</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>konak dac sql client</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Konak.Dac.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

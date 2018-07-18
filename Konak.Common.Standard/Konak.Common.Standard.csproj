@@ -4,6 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Konak.Common.Standard</AssemblyName>
     <RootNamespace>Konak.Common</RootNamespace>
+    <Authors>Konakov Sergey</Authors>
+    <Company>Konak</Company>
+    <Description>Library containing common classies and functionality that can be used in .NET and .NET core libraries</Description>
+    <Copyright>Konakov Sergey</Copyright>
+    <PackageProjectUrl>https://github.com/konak/konak-components/tree/master/Konak.Common.Standard</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/konak/konak-components/tree/master/Konak.Common.Standard</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>konak</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
