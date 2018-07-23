@@ -10,6 +10,11 @@ namespace Konak.Dac.Configuration
     /// </summary>
     public class ConfigSection : ConfigurationSection
     {
+        /// <summary>
+        /// name of the configuration section in configuration file
+        /// </summary>
+        public const string ConfigSectionName = "Konak.Dac";
+
         [ConfigurationProperty("settings")]
         public DACSettings Settings
         {
@@ -23,7 +28,7 @@ namespace Konak.Dac.Configuration
 
             try
             {
-                res = (ConfigSection)ConfigurationManager.GetSection("Konak.Dac");
+                res = (ConfigSection)ConfigurationManager.GetSection(ConfigSectionName);
             }
             catch (Exception ex)
             {

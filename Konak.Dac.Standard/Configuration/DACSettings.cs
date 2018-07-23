@@ -11,13 +11,18 @@ namespace Konak.Dac.Configuration
     public class DACSettings : ConfigurationElement
     {
         /// <summary>
+        /// Name of the default conection string attribute in config file
+        /// </summary>
+        public const string DefaultConnectionStringAttributeName = "default_connection_string";
+
+        /// <summary>
         /// Default connection string name used for SQL execution
         /// </summary>
-        [ConfigurationProperty("default_connection_string")]
+        [ConfigurationProperty(DefaultConnectionStringAttributeName)]
         public string DefaultConnectionString
         {
-            get { return (string)this["default_connection_string"]; }
-            set { this["default_connection_string"] = value; }
+            get { return (string)this[DefaultConnectionStringAttributeName]; }
+            set { this[DefaultConnectionStringAttributeName] = value; }
         }
     }
 }

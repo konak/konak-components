@@ -1,5 +1,6 @@
 ﻿using Konak.Common.Exceptions;
 using Konak.Dac.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -50,25 +51,60 @@ namespace Konak.Dac.Core
         #region private methods
         private static void Init()
         {
+            Exception exception = null;
+
+            CONNECTIONS = new SortedList<string, DB>();
+
             try
             {
                 SETTINGS = ConfigSection.GetSection().Settings;
-
-                CONNECTIONS = new SortedList<string, DB>();
 
                 foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings)
                     CONNECTIONS.Add(cs.Name, new DB(cs.ConnectionString));
 
                 DEFAULT_CONNECTION = CONNECTIONS[SETTINGS.DefaultConnectionString];
+
+                return;
             }
-            catch (GenericException)
+            catch (GenericException ex)
             {
-                throw;
+                exception = ex;
             }
             catch (Exception ex)
             {
-                throw new GenericException(ex);
+                exception = new GenericException(ex);
             }
+
+            string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            try
+            {
+                ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+
+                configurationBuilder
+                    .AddJsonFile($"appsettings.json", true, true)
+                    .AddJsonFile($"appsettings.{environmentName}.json", true, true)
+                    .AddJsonFile($"konak.settings.json", true, true)
+                    .AddJsonFile($"konak.settings.{environmentName}.json", true, true);
+
+                IConfiguration cfg = configurationBuilder.Build();
+
+                IConfigurationSection connectionStringSection = cfg.GetSection("connectionStrings");
+                IConfigurationSection konakDacSettingsSection = cfg.GetSection(ConfigSection.ConfigSectionName);
+
+                foreach(IConfigurationSection cs in connectionStringSection.GetChildren())
+                    CONNECTIONS.Add(cs.Key, new DB(cs.Value));
+
+                DEFAULT_CONNECTION = CONNECTIONS[konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName]];
+
+                return;
+            }
+            catch (Exception ex)
+            {
+                exception = new GenericException(ex);
+            }
+
+            throw exception;
         }
 
         #endregion
