@@ -89,7 +89,7 @@ namespace Konak.Dac.Core
 
                 IConfiguration cfg = configurationBuilder.Build();
 
-                IConfigurationSection connectionStringSection = cfg.GetSection("connectionStrings");
+                IConfigurationSection connectionStringSection = cfg.GetSection("ConnectionStrings");
                 IConfigurationSection konakDacSettingsSection = cfg.GetSection(ConfigSection.ConfigSectionName);
 
                 foreach(IConfigurationSection cs in connectionStringSection.GetChildren())
