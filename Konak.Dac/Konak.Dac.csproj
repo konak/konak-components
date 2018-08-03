@@ -55,10 +55,6 @@
       <Project>{a9cb431d-56f7-4c6d-9ff7-282a40821d2f}</Project>
       <Name>Konak.Common.Standard</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Konak.Common\Konak.Common.csproj">
-      <Project>{7e3bad5c-18b5-49c1-aaa2-e4a9a8a70d2c}</Project>
-      <Name>Konak.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Konak.Dac.Standard\Konak.Dac.Standard.csproj">
       <Project>{a74303e6-f6e4-45d5-9f31-179332bb19b6}</Project>
       <Name>Konak.Dac.Standard</Name>

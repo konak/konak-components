@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Konak.Dac</id>
+    <version>1.0.1.0</version>
+    <title>Konak.Dac</title>
+    <authors>Konakov Sergey</authors>
+    <owners>Konakov Sergey</owners>
+    <projectUrl>https://github.com/konak/konak-components/tree/master/Konak.Dac</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Data Access Component that makes it easy to setup and query data from SQL server.</description>
+    <releaseNotes>Initial version of component</releaseNotes>
+    <copyright>Copyright Konak 2018</copyright>
+    <tags>konak dac sql client</tags>
+  </metadata>
+</package>
