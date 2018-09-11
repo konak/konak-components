@@ -51,6 +51,8 @@ namespace Konak.Dac.Core
         #region private methods
         internal static void Init()
         {
+            DB firstConnection = null;
+
             Exception exception = null;
 
             CONNECTIONS = new SortedList<string, DB>();
@@ -60,9 +62,19 @@ namespace Konak.Dac.Core
                 SETTINGS = ConfigSection.GetSection().Settings;
 
                 foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings)
-                    CONNECTIONS.Add(cs.Name, new DB(cs.ConnectionString));
+                {
+                    DB connection = new DB(cs.ConnectionString);
 
-                DEFAULT_CONNECTION = CONNECTIONS[SETTINGS.DefaultConnectionString];
+                    if (firstConnection == null)
+                        firstConnection = connection;
+
+                    CONNECTIONS.Add(cs.Name, new DB(cs.ConnectionString));
+                }
+
+                if (string.IsNullOrEmpty(SETTINGS.DefaultConnectionString))
+                    DEFAULT_CONNECTION = firstConnection;
+                else
+                    DEFAULT_CONNECTION = CONNECTIONS[SETTINGS.DefaultConnectionString];
 
                 return;
             }
@@ -80,15 +92,29 @@ namespace Konak.Dac.Core
 
         internal static void Init(IConfiguration configuration)
         {
+            DB firstConnection = null;
+
             CONNECTIONS = new SortedList<string, DB>();
 
             IConfigurationSection connectionStringSection = configuration.GetSection("ConnectionStrings");
             IConfigurationSection konakDacSettingsSection = configuration.GetSection(ConfigSection.ConfigSectionName);
 
-            foreach (IConfigurationSection cs in connectionStringSection.GetChildren())
-                CONNECTIONS.Add(cs.Key, new DB(cs.Value));
+            IEnumerable<IConfigurationSection> listOfConnectionStrings = connectionStringSection.GetChildren();
 
-            DEFAULT_CONNECTION = CONNECTIONS[konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName]];
+            foreach (IConfigurationSection cs in listOfConnectionStrings)
+            {
+                DB connection = new DB(cs.Value);
+
+                if (firstConnection == null)
+                    firstConnection = connection;
+
+                CONNECTIONS.Add(cs.Key, connection);
+            }
+
+            if (konakDacSettingsSection.Value == null)
+                DEFAULT_CONNECTION = firstConnection;
+            else
+                DEFAULT_CONNECTION = CONNECTIONS[konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName]];
         }
         #endregion
 
