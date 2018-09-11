@@ -36,20 +36,20 @@ namespace Konak.Dac.Core
         #endregion
 
         #region static constructor
-        /// <summary>
-        /// Static constructor of DAC class.
-        /// </summary>
-        /// <remarks>
-        /// It is called automatically before the first instance is created or any static members are referenced.
-        /// </remarks>
-        static DAC()
-        {
-            Init();
-        }
+        ///// <summary>
+        ///// Static constructor of DAC class.
+        ///// </summary>
+        ///// <remarks>
+        ///// It is called automatically before the first instance is created or any static members are referenced.
+        ///// </remarks>
+        //static DAC()
+        //{
+        //    Init();
+        //}
         #endregion
 
         #region private methods
-        private static void Init()
+        internal static void Init()
         {
             Exception exception = null;
 
@@ -75,38 +75,21 @@ namespace Konak.Dac.Core
                 exception = new GenericException(ex);
             }
 
-            string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-            try
-            {
-                ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-
-                configurationBuilder
-                    .AddJsonFile($"appsettings.json", true, true)
-                    .AddJsonFile($"appsettings.{environmentName}.json", true, true)
-                    .AddJsonFile($"konak.settings.json", true, true)
-                    .AddJsonFile($"konak.settings.{environmentName}.json", true, true);
-
-                IConfiguration cfg = configurationBuilder.Build();
-
-                IConfigurationSection connectionStringSection = cfg.GetSection("ConnectionStrings");
-                IConfigurationSection konakDacSettingsSection = cfg.GetSection(ConfigSection.ConfigSectionName);
-
-                foreach(IConfigurationSection cs in connectionStringSection.GetChildren())
-                    CONNECTIONS.Add(cs.Key, new DB(cs.Value));
-
-                DEFAULT_CONNECTION = CONNECTIONS[konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName]];
-
-                return;
-            }
-            catch (Exception ex)
-            {
-                exception = new GenericException(ex);
-            }
-
             throw exception;
         }
 
+        internal static void Init(IConfiguration configuration)
+        {
+            CONNECTIONS = new SortedList<string, DB>();
+
+            IConfigurationSection connectionStringSection = configuration.GetSection("ConnectionStrings");
+            IConfigurationSection konakDacSettingsSection = configuration.GetSection(ConfigSection.ConfigSectionName);
+
+            foreach (IConfigurationSection cs in connectionStringSection.GetChildren())
+                CONNECTIONS.Add(cs.Key, new DB(cs.Value));
+
+            DEFAULT_CONNECTION = CONNECTIONS[konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName]];
+        }
         #endregion
 
         #region public methods
