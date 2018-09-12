@@ -45,9 +45,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<T> ExecuteSQLBatchAsync<T>(Func<IDbConnection, Task<T>> batch)
+        public Task<T> ExecuteSQLBatchAsync<T>(Func<IDbConnection, Task<T>> batch)
         {
-            return await ExecuteSQLBatchAsync<T>(batch, true, true, true, true);
+            return ExecuteSQLBatchAsync<T>(batch, true, true, true, true);
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<T> ExecuteSQLBatchAsync<T>(Func<IDbConnection, Task<T>> batch, bool closeConnection)
+        public Task<T> ExecuteSQLBatchAsync<T>(Func<IDbConnection, Task<T>> batch, bool closeConnection)
         {
-            return await ExecuteSQLBatchAsync<T>(batch, true, true, true, closeConnection);
+            return ExecuteSQLBatchAsync<T>(batch, true, true, true, closeConnection);
         }
 
         /// <summary>
@@ -109,9 +109,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<T> ExecuteSQLBatchAsync<T>(Func<IDbConnection, Task<T>> batch, bool throwDBException, bool throwGenericException, bool throwSystemException)
+        public Task<T> ExecuteSQLBatchAsync<T>(Func<IDbConnection, Task<T>> batch, bool throwDBException, bool throwGenericException, bool throwSystemException)
         {
-            return await ExecuteSQLBatchAsync<T>(batch, throwDBException, throwGenericException, throwSystemException, true);
+            return ExecuteSQLBatchAsync<T>(batch, throwDBException, throwGenericException, throwSystemException, true);
         }
 
         /// <summary>
@@ -137,9 +137,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<T> ExecuteTransactionalSQLBatchAsync<T>(Func<IDbTransaction, Task<T>> batch)
+        public Task<T> ExecuteTransactionalSQLBatchAsync<T>(Func<IDbTransaction, Task<T>> batch)
         {
-            return await ExecuteTransactionalSQLBatchAsync<T>(batch, true, true, true);
+            return ExecuteTransactionalSQLBatchAsync<T>(batch, true, true, true);
         }
 
         /// <summary>
@@ -468,9 +468,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<SqlDataReader> ExecuteReaderAsync(string sql)
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql)
         {
-            return await ExecuteReaderAsync(sql, CommandType.Text, null);
+            return ExecuteReaderAsync(sql, CommandType.Text, null);
         }
 
         /// <summary>
@@ -496,9 +496,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<SqlDataReader> ExecuteReaderAsync(string sql, List<KeyValuePair<String, Object>> parameters)
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return await ExecuteReaderAsync(sql, CommandType.Text, parameters);
+            return ExecuteReaderAsync(sql, CommandType.Text, parameters);
         }
 
         /// <summary>
@@ -594,11 +594,11 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<SqlDataReader> ExecuteReaderAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
             Func<IDbConnection, Task<SqlDataReader>> executeReaderAsyncFunction = connection => ExecuteReaderAsyncInternal(connection, sql, commandType, parameters);
 
-            return await ExecuteSQLBatchAsync<SqlDataReader>(executeReaderAsyncFunction, true, true, true, false);
+            return ExecuteSQLBatchAsync<SqlDataReader>(executeReaderAsyncFunction, true, true, true, false);
         }
 
         #endregion
@@ -980,9 +980,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<int> ExecuteNonQueryAsync(string sql)
+        public Task<int> ExecuteNonQueryAsync(string sql)
         {
-            return await ExecuteNonQueryAsync(sql, CommandType.Text, null);
+            return ExecuteNonQueryAsync(sql, CommandType.Text, null);
         }
 
         /// <summary>
@@ -1008,9 +1008,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<int> ExecuteNonQueryAsync(string sql, List<KeyValuePair<String, Object>> parameters)
+        public Task<int> ExecuteNonQueryAsync(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return await ExecuteNonQueryAsync(sql, CommandType.Text, parameters);
+            return ExecuteNonQueryAsync(sql, CommandType.Text, parameters);
         }
 
         /// <summary>
@@ -1063,7 +1063,7 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<int> ExecuteNonQueryAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
+        public Task<int> ExecuteNonQueryAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
             Func<IDbConnection, Task<int>> func = async delegate (IDbConnection connection)
             {
@@ -1090,7 +1090,7 @@ namespace Konak.Dac
                 return res;
             };
 
-            return await ExecuteSQLBatchAsync<int>(func);
+            return ExecuteSQLBatchAsync<int>(func);
         }
 
         #endregion
@@ -1118,9 +1118,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<object> ExecuteScalarAsync(string sql)
+        public Task<object> ExecuteScalarAsync(string sql)
         {
-            return await ExecuteScalarAsync(sql, CommandType.Text, null);
+            return ExecuteScalarAsync(sql, CommandType.Text, null);
         }
 
         /// <summary>
@@ -1146,9 +1146,9 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<object> ExecuteScalarAsync(string sql, List<KeyValuePair<String, Object>> parameters)
+        public Task<object> ExecuteScalarAsync(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return await ExecuteScalarAsync(sql, CommandType.Text, parameters);
+            return ExecuteScalarAsync(sql, CommandType.Text, parameters);
         }
 
         /// <summary>
@@ -1202,7 +1202,7 @@ namespace Konak.Dac
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        public async Task<object> ExecuteScalarAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
+        public Task<object> ExecuteScalarAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
             Func<IDbConnection, Task<object>> b = async delegate (IDbConnection connection)
             {
@@ -1230,7 +1230,7 @@ namespace Konak.Dac
                 return res;
             };
 
-            return await ExecuteSQLBatchAsync<object>(b);
+            return ExecuteSQLBatchAsync<object>(b);
         }
 
         #endregion
