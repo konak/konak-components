@@ -1,5 +1,6 @@
 ﻿using Konak.Common.Exceptions;
 using Konak.Dac;
+using Konak.Dac.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -374,6 +375,69 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillData<T>(T dataOut, string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
         {
+            FillData(dataOut, sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Execute SQL command or stored procedure and fill that data into the dataOut object
+        /// </summary>
+        /// <typeparam name="T">A generic type of the object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></typeparam>
+        /// <param name="dataOut">Object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></param>
+        /// <param name="sql">SQL query, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillData<T>(T dataOut, string sql, CommandType commandType, dynamic parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            FillData(dataOut, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Execute SQL command or stored procedure and fill that data into the dataOut object
+        /// </summary>
+        /// <typeparam name="T">A generic type of the object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></typeparam>
+        /// <param name="dataOut">Object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></param>
+        /// <param name="sql">SQL query, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillData<T>(T dataOut, string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            FillData(dataOut, sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Execute SQL command or stored procedure and fill that data into the dataOut object
+        /// </summary>
+        /// <typeparam name="T">A generic type of the object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></typeparam>
+        /// <param name="dataOut">Object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></param>
+        /// <param name="sql">SQL query, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillData<T>(T dataOut, string sql, CommandType commandType, SqlParameter[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
             SqlCommand cmd = null;
             SqlDataAdapter da = null;
 
@@ -390,9 +454,8 @@ namespace Konak.Dac.Core
 
                 cmd.Parameters.Add(rv);
 
-                if (parameters != null)
-                    foreach (KeyValuePair<String, Object> parameter in parameters)
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
 
                 da = new SqlDataAdapter(cmd);
 
@@ -456,7 +519,7 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public SqlDataReader ExecuteReader(string sql)
         {
-            return ExecuteReader(sql, CommandType.Text, null);
+            return ExecuteReader(sql, CommandType.Text, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -469,7 +532,35 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<SqlDataReader> ExecuteReaderAsync(string sql)
         {
-            return ExecuteReaderAsync(sql, CommandType.Text, null);
+            return ExecuteReaderAsync(sql, CommandType.Text, new SqlParameter[0]);
+        }
+
+        /// <summary>
+        /// Execute SQL command and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command text</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public SqlDataReader ExecuteReader(string sql, SqlParameter[] parameters)
+        {
+            return ExecuteReader(sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Execute SQL command and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command text</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public SqlDataReader ExecuteReader(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteReader(sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -483,7 +574,21 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public SqlDataReader ExecuteReader(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return ExecuteReader(sql, CommandType.Text, parameters);
+            return ExecuteReader(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL command and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command text</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public SqlDataReader ExecuteReader(string sql, dynamic parameters)
+        {
+            return ExecuteReader(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
         }
 
         /// <summary>
@@ -496,6 +601,34 @@ namespace Konak.Dac.Core
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<SqlDataReader> ExecuteReaderAsync(string sql, List<KeyValuePair<String, Object>> parameters)
+        {
+            return ExecuteReaderAsync(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL command asyncronously and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command text</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql, dynamic parameters)
+        {
+            return ExecuteReaderAsync(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL command asyncronously and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command text</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql, SqlParameter[] parameters)
         {
             return ExecuteReaderAsync(sql, CommandType.Text, parameters);
         }
@@ -512,6 +645,36 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public SqlDataReader ExecuteReader(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
+            return ExecuteReader(sql, commandType, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL command or stored procedure and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public SqlDataReader ExecuteReader(string sql, CommandType commandType, dynamic parameters)
+        {
+            return ExecuteReader(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL command or stored procedure and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public SqlDataReader ExecuteReader(string sql, CommandType commandType, SqlParameter[] parameters)
+        {
             SQLBatch<SqlDataReader> b = delegate (IDbConnection connection)
             {
                 SqlConnection conn = connection as SqlConnection;
@@ -525,9 +688,8 @@ namespace Konak.Dac.Core
 
                 cmd.Parameters.Add(rv);
 
-                if (parameters != null)
-                    foreach (KeyValuePair<String, Object> parameter in parameters)
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
 
                 SqlDataReader res = cmd.ExecuteReader(CommandBehavior.CloseConnection);
 
@@ -554,7 +716,7 @@ namespace Konak.Dac.Core
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
-        private async Task<SqlDataReader> ExecuteReaderAsyncInternal(IDbConnection connection, string sqlQuery, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
+        private async Task<SqlDataReader> ExecuteReaderAsyncInternal(IDbConnection connection, string sqlQuery, CommandType commandType, SqlParameter[] parameters)
         {
             SqlConnection conn = connection as SqlConnection;
             SqlCommand cmd = new SqlCommand(sqlQuery, conn);
@@ -567,9 +729,8 @@ namespace Konak.Dac.Core
 
             cmd.Parameters.Add(rv);
 
-            if (parameters != null)
-                foreach (KeyValuePair<String, Object> parameter in parameters)
-                    cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+            if (parameters != null && parameters.Length > 0)
+                cmd.Parameters.AddRange(parameters);
 
             SqlDataReader res = await cmd.ExecuteReaderAsync(CommandBehavior.CloseConnection);
 
@@ -595,11 +756,44 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<SqlDataReader> ExecuteReaderAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
-            Func<IDbConnection, Task<SqlDataReader>> executeReaderAsyncFunction = connection => ExecuteReaderAsyncInternal(connection, sql, commandType, parameters);
+            Func<IDbConnection, Task<SqlDataReader>> executeReaderAsyncFunction = connection => ExecuteReaderAsyncInternal(connection, sql, commandType, parameters.ToSqlParameters());
 
             return ExecuteSQLBatchAsync<SqlDataReader>(executeReaderAsyncFunction, true, true, true, false);
         }
 
+        /// <summary>
+        /// Async version of <see cref="ExecuteReader"/> to execute SQL command or stored procedure and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql, CommandType commandType, dynamic parameters)
+        {
+            Func<IDbConnection, Task<SqlDataReader>> executeReaderAsyncFunction = connection => ExecuteReaderAsyncInternal(connection, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters));
+
+            return ExecuteSQLBatchAsync<SqlDataReader>(executeReaderAsyncFunction, true, true, true, false);
+        }
+
+        /// <summary>
+        /// Async version of <see cref="ExecuteReader"/> to execute SQL command or stored procedure and return SqlDataReader object to read data
+        /// </summary>
+        /// <param name="sql">SQL command, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Data reader object to read data</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<SqlDataReader> ExecuteReaderAsync(string sql, CommandType commandType, SqlParameter[] parameters)
+        {
+            Func<IDbConnection, Task<SqlDataReader>> executeReaderAsyncFunction = connection => ExecuteReaderAsyncInternal(connection, sql, commandType, parameters);
+
+            return ExecuteSQLBatchAsync<SqlDataReader>(executeReaderAsyncFunction, true, true, true, false);
+        }
         #endregion
 
         #region GetDataSet
@@ -613,7 +807,35 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataSet GetDataSet(string sql)
         {
-            return GetDataSet(sql, CommandType.Text, null);
+            return GetDataSet(sql, CommandType.Text, new SqlParameter[0]);
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command
+        /// </summary>
+        /// <param name="sql">SQL command text to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, SqlParameter[] parameters)
+        {
+            return GetDataSet(sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command
+        /// </summary>
+        /// <param name="sql">SQL command text to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return GetDataSet(sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -627,7 +849,51 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataSet GetDataSet(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return GetDataSet(sql, CommandType.Text, parameters);
+            return GetDataSet(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command
+        /// </summary>
+        /// <param name="sql">SQL command text to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, dynamic parameters)
+        {
+            return GetDataSet(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command or stored procedure
+        /// </summary>
+        /// <param name="sql">SQL command text, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, CommandType commandType, SqlParameter[] parameters)
+        {
+            return GetDataSet(sql, commandType, parameters, true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command or stored procedure
+        /// </summary>
+        /// <param name="sql">SQL command text, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            return GetDataSet(sql, commandType, parameters.ToSqlParameters(), true, true, true, 0, 0);
         }
 
         /// <summary>
@@ -642,7 +908,70 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataSet GetDataSet(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
-            return GetDataSet(sql, commandType, parameters, true, true, true, 0, 0);
+            return GetDataSet(sql, commandType, parameters.ToSqlParameters(), true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command or stored procedure
+        /// </summary>
+        /// <param name="sql">SQL command text, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, CommandType commandType, dynamic parameters)
+        {
+            return GetDataSet(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command or stored procedure
+        /// </summary>
+        /// <param name="sql">SQL command text, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, CommandType commandType, SqlParameter[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            DataSet ds = new DataSet();
+
+            FillData<DataSet>(ds, sql, commandType, parameters, throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+
+            return ds;
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command or stored procedure
+        /// </summary>
+        /// <param name="sql">SQL command text, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            DataSet ds = new DataSet();
+
+            FillData<DataSet>(ds, sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+
+            return ds;
         }
 
         /// <summary>
@@ -664,7 +993,31 @@ namespace Konak.Dac.Core
         {
             DataSet ds = new DataSet();
 
-            FillData<DataSet>(ds, sql, commandType, parameters, throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+            FillData<DataSet>(ds, sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+
+            return ds;
+        }
+
+        /// <summary>
+        /// Get new dataset for specified SQL command or stored procedure
+        /// </summary>
+        /// <param name="sql">SQL command text, stored procedure or table name</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataSet of results of SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataSet GetDataSet(string sql, CommandType commandType, dynamic parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            DataSet ds = new DataSet();
+
+            FillData<DataSet>(ds, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
 
             return ds;
         }
@@ -682,7 +1035,7 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataSet(DataSet ds, string sql)
         {
-            FillDataSet(ds, sql, CommandType.Text, null);
+            FillDataSet(ds, sql, CommandType.Text, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -697,7 +1050,35 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataSet(DataSet ds, string sql, int startRecord, int maxRecords)
         {
-            FillDataSet(ds, sql, CommandType.Text, null, startRecord, maxRecords);
+            FillDataSet(ds, sql, CommandType.Text, new SqlParameter[0], startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, SqlParameter[] parameters)
+        {
+            FillDataSet(ds, sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            FillDataSet(ds, sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -711,7 +1092,53 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataSet(DataSet ds, string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            FillDataSet(ds, sql, CommandType.Text, parameters);
+            FillDataSet(ds, sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, dynamic parameters)
+        {
+            FillDataSet(ds, sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, SqlParameter[] parameters, int startRecord, int maxRecords)
+        {
+            FillDataSet(ds, sql, CommandType.Text, parameters, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, KeyValuePair<String, Object>[] parameters, int startRecord, int maxRecords)
+        {
+            FillDataSet(ds, sql, CommandType.Text, parameters.ToSqlParameters(), startRecord, maxRecords);
         }
 
         /// <summary>
@@ -727,7 +1154,53 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataSet(DataSet ds, string sql, List<KeyValuePair<String, Object>> parameters, int startRecord, int maxRecords)
         {
-            FillDataSet(ds, sql, CommandType.Text, parameters, startRecord, maxRecords);
+            FillDataSet(ds, sql, CommandType.Text, parameters.ToSqlParameters(), startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, dynamic parameters, int startRecord, int maxRecords)
+        {
+            FillDataSet(ds, sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters), startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, CommandType commandType, SqlParameter[] parameters)
+        {
+            FillData<DataSet>(ds, sql, commandType, parameters, true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            FillData<DataSet>(ds, sql, commandType, parameters.ToSqlParameters(), true, true, true, 0, 0);
         }
 
         /// <summary>
@@ -742,7 +1215,56 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataSet(DataSet ds, string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
-            FillData<DataSet>(ds, sql, commandType, parameters, true, true, true, 0, 0);
+            FillData<DataSet>(ds, sql, commandType, parameters.ToSqlParameters(), true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, CommandType commandType, dynamic parameters)
+        {
+            FillData<DataSet>(ds, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, CommandType commandType, SqlParameter[] parameters, int startRecord, int maxRecords)
+        {
+            FillData<DataSet>(ds, sql, commandType, parameters, true, true, true, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters, int startRecord, int maxRecords)
+        {
+            FillData<DataSet>(ds, sql, commandType, parameters.ToSqlParameters(), true, true, true, startRecord, maxRecords);
         }
 
         /// <summary>
@@ -759,9 +1281,25 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataSet(DataSet ds, string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters, int startRecord, int maxRecords)
         {
-            FillData<DataSet>(ds, sql, commandType, parameters, true, true, true, startRecord, maxRecords);
+            FillData<DataSet>(ds, sql, commandType, parameters.ToSqlParameters(), true, true, true, startRecord, maxRecords);
         }
 
+        /// <summary>
+        /// Fill provided DataSet item with values from executed SQL command
+        /// </summary>
+        /// <param name="ds">A DatSet item that must be filled with data</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataSet(DataSet ds, string sql, CommandType commandType, dynamic parameters, int startRecord, int maxRecords)
+        {
+            FillData<DataSet>(ds, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), true, true, true, startRecord, maxRecords);
+        }
         #endregion
 
         #region GetDataTable
@@ -776,7 +1314,7 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataTable GetDataTable(string sql)
         {
-            return GetDataTable(sql, null);
+            return GetDataTable(sql, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -791,7 +1329,35 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataTable GetDataTable(string sql, int startRecord, int maxRecords)
         {
-            return GetDataTable(sql, null, startRecord, maxRecords);
+            return GetDataTable(sql, new SqlParameter[0], startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, SqlParameter[] parameters)
+        {
+            return GetDataTable(sql, parameters, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return GetDataTable(sql, parameters.ToSqlParameters(), 0, 0);
         }
 
         /// <summary>
@@ -805,7 +1371,53 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataTable GetDataTable(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return GetDataTable(sql, parameters, 0, 0);
+            return GetDataTable(sql, parameters.ToSqlParameters(), 0, 0);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, dynamic parameters)
+        {
+            return GetDataTable(sql, DacSqlParametersExtensions.ToSqlParameters(parameters), 0, 0);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, SqlParameter[] parameters, int startRecord, int maxRecords)
+        {
+            return GetDataTable(sql, CommandType.Text, parameters, true, true, true, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, KeyValuePair<String, Object>[] parameters, int startRecord, int maxRecords)
+        {
+            return GetDataTable(sql, CommandType.Text, parameters.ToSqlParameters(), true, true, true, startRecord, maxRecords);
         }
 
         /// <summary>
@@ -821,7 +1433,59 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataTable GetDataTable(string sql, List<KeyValuePair<String, Object>> parameters, int startRecord, int maxRecords)
         {
-            return GetDataTable(sql, CommandType.Text, parameters, true, true, true, startRecord, maxRecords);
+            return GetDataTable(sql, CommandType.Text, parameters.ToSqlParameters(), true, true, true, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, dynamic parameters, int startRecord, int maxRecords)
+        {
+            return GetDataTable(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters), true, true, true, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, CommandType commandType, SqlParameter[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException)
+        {
+            return GetDataTable(sql, commandType, parameters, throwDBException, throwGenericException, throwSystemException, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException)
+        {
+            return GetDataTable(sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, 0, 0);
         }
 
         /// <summary>
@@ -839,7 +1503,73 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public DataTable GetDataTable(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters, bool throwDBException, bool throwGenericException, bool throwSystemException)
         {
-            return GetDataTable(sql, commandType, parameters, throwDBException, throwGenericException, throwSystemException, 0, 0);
+            return GetDataTable(sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, CommandType commandType, dynamic parameters, bool throwDBException, bool throwGenericException, bool throwSystemException)
+        {
+            return GetDataTable(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), throwDBException, throwGenericException, throwSystemException, 0, 0);
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, CommandType commandType, SqlParameter[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            DataTable dt = new DataTable("Table0");
+
+            FillData<DataTable>(dt, sql, commandType, parameters, throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+
+            return dt;
+        }
+
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            DataTable dt = new DataTable("Table0");
+
+            FillData<DataTable>(dt, sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+
+            return dt;
         }
 
         /// <summary>
@@ -861,11 +1591,34 @@ namespace Konak.Dac.Core
         {
             DataTable dt = new DataTable("Table0");
 
-            FillData<DataTable>(dt, sql, commandType, parameters, throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+            FillData<DataTable>(dt, sql, commandType, parameters.ToSqlParameters(), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
 
             return dt;
         }
 
+        /// <summary>
+        /// Get new DataTable for specified sql command
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="throwDBException">Throw SQL execution exceptions or suspend them</param>
+        /// <param name="throwGenericException">Throw Generic exceptions or suspend them</param>
+        /// <param name="throwSystemException">Throw System exceptions or suspend them</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <returns>New DataTable item with results of the SQL command</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public DataTable GetDataTable(string sql, CommandType commandType, dynamic parameters, bool throwDBException, bool throwGenericException, bool throwSystemException, int startRecord, int maxRecords)
+        {
+            DataTable dt = new DataTable("Table0");
+
+            FillData<DataTable>(dt, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), throwDBException, throwGenericException, throwSystemException, startRecord, maxRecords);
+
+            return dt;
+        }
         #endregion
 
         #region FillDataTable
@@ -880,7 +1633,7 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataTable(DataTable dt, string sql)
         {
-            FillDataTable(dt, sql, CommandType.Text, null);
+            FillDataTable(dt, sql, CommandType.Text, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -892,7 +1645,29 @@ namespace Konak.Dac.Core
         /// <param name="maxRecords">The maximum number of records to retrive</param>
         public void FillDataTable(DataTable dt, string sql, int startRecord, int maxRecords)
         {
-            FillDataTable(dt, sql, CommandType.Text, null, startRecord, maxRecords);
+            FillDataTable(dt, sql, CommandType.Text, new SqlParameter[0], startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        public void FillDataTable(DataTable dt, string sql, SqlParameter[] parameters)
+        {
+            FillDataTable(dt, sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        public void FillDataTable(DataTable dt, string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            FillDataTable(dt, sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -903,7 +1678,50 @@ namespace Konak.Dac.Core
         /// <param name="parameters">Parameters of the SQL command</param>
         public void FillDataTable(DataTable dt, string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            FillDataTable(dt, sql, CommandType.Text, parameters);
+            FillDataTable(dt, sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        public void FillDataTable(DataTable dt, string sql, dynamic parameters)
+        {
+            FillDataTable(dt, sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, SqlParameter[] parameters, int startRecord, int maxRecords)
+        {
+            FillDataTable(dt, sql, CommandType.Text, parameters, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, KeyValuePair<String, Object>[] parameters, int startRecord, int maxRecords)
+        {
+            FillDataTable(dt, sql, CommandType.Text, parameters.ToSqlParameters(), startRecord, maxRecords);
         }
 
         /// <summary>
@@ -919,7 +1737,53 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataTable(DataTable dt, string sql, List<KeyValuePair<String, Object>> parameters, int startRecord, int maxRecords)
         {
-            FillDataTable(dt, sql, CommandType.Text, parameters, startRecord, maxRecords);
+            FillDataTable(dt, sql, CommandType.Text, parameters.ToSqlParameters(), startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, dynamic parameters, int startRecord, int maxRecords)
+        {
+            FillDataTable(dt, sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters), startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, CommandType commandType, SqlParameter[] parameters)
+        {
+            FillData<DataTable>(dt, sql, commandType, parameters, true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            FillData<DataTable>(dt, sql, commandType, parameters.ToSqlParameters(), true, true, true, 0, 0);
         }
 
         /// <summary>
@@ -934,7 +1798,56 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataTable(DataTable dt, string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
-            FillData<DataTable>(dt, sql, commandType, parameters, true, true, true, 0, 0);
+            FillData<DataTable>(dt, sql, commandType, parameters.ToSqlParameters(), true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt">A DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, CommandType commandType, dynamic parameters)
+        {
+            FillData<DataTable>(dt, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), true, true, true, 0, 0);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt"> DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, CommandType commandType, SqlParameter[] parameters, int startRecord, int maxRecords)
+        {
+            FillData<DataTable>(dt, sql, commandType, parameters, true, true, true, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt"> DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters, int startRecord, int maxRecords)
+        {
+            FillData<DataTable>(dt, sql, commandType, parameters.ToSqlParameters(), true, true, true, startRecord, maxRecords);
         }
 
         /// <summary>
@@ -951,7 +1864,24 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public void FillDataTable(DataTable dt, string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters, int startRecord, int maxRecords)
         {
-            FillData<DataTable>(dt, sql, commandType, parameters, true, true, true, startRecord, maxRecords);
+            FillData<DataTable>(dt, sql, commandType, parameters.ToSqlParameters(), true, true, true, startRecord, maxRecords);
+        }
+
+        /// <summary>
+        /// Fill provided DataTable item with SQL command values
+        /// </summary>
+        /// <param name="dt"> DataTable item</param>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <param name="startRecord">The zero based record number to start with</param>
+        /// <param name="maxRecords">The maximum number of records to retrive</param>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public void FillDataTable(DataTable dt, string sql, CommandType commandType, dynamic parameters, int startRecord, int maxRecords)
+        {
+            FillData<DataTable>(dt, sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters), true, true, true, startRecord, maxRecords);
         }
 
         #endregion
@@ -968,7 +1898,7 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public int ExecuteNonQuery(string sql)
         {
-            return ExecuteNonQuery(sql, CommandType.Text, null);
+            return ExecuteNonQuery(sql, CommandType.Text, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -981,7 +1911,35 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<int> ExecuteNonQueryAsync(string sql)
         {
-            return ExecuteNonQueryAsync(sql, CommandType.Text, null);
+            return ExecuteNonQueryAsync(sql, CommandType.Text, new SqlParameter[0]);
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public int ExecuteNonQuery(string sql, SqlParameter[] parameters)
+        {
+            return ExecuteNonQuery(sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public int ExecuteNonQuery(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteNonQuery(sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -995,7 +1953,49 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public int ExecuteNonQuery(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return ExecuteNonQuery(sql, CommandType.Text, parameters);
+            return ExecuteNonQuery(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public int ExecuteNonQuery(string sql, dynamic parameters)
+        {
+            return ExecuteNonQuery(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL query asynchronously and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<int> ExecuteNonQueryAsync(string sql, SqlParameter[] parameters)
+        {
+            return ExecuteNonQueryAsync(sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Execute SQL query asynchronously and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<int> ExecuteNonQueryAsync(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteNonQueryAsync(sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -1009,7 +2009,36 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<int> ExecuteNonQueryAsync(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return ExecuteNonQueryAsync(sql, CommandType.Text, parameters);
+            return ExecuteNonQueryAsync(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL query asynchronously and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<int> ExecuteNonQueryAsync(string sql, dynamic parameters)
+        {
+            return ExecuteNonQueryAsync(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public int ExecuteNonQuery(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteNonQuery(sql, commandType, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -1024,6 +2053,36 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public int ExecuteNonQuery(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
+            return ExecuteNonQuery(sql, commandType, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public int ExecuteNonQuery(string sql, CommandType commandType, dynamic parameters)
+        {
+            return ExecuteNonQuery(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public int ExecuteNonQuery(string sql, CommandType commandType, SqlParameter[] parameters)
+        {
             SQLBatch<int> b = delegate (IDbConnection connection)
             {
                 SqlConnection conn = connection as SqlConnection;
@@ -1036,9 +2095,8 @@ namespace Konak.Dac.Core
 
                 cmd.Parameters.Add(rv);
 
-                if (parameters != null)
-                    foreach (KeyValuePair<String, Object> parameter in parameters)
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
 
                 int res = cmd.ExecuteNonQuery();
 
@@ -1062,7 +2120,53 @@ namespace Konak.Dac.Core
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<int> ExecuteNonQueryAsync(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteNonQueryAsync(sql, commandType, parameters.ToSqlParameters());
+        }
+
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<int> ExecuteNonQueryAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
+        {
+            return ExecuteNonQueryAsync(sql, commandType, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<int> ExecuteNonQueryAsync(string sql, CommandType commandType, dynamic parameters)
+        {
+            return ExecuteNonQueryAsync(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL query and return the number of affected values
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Number of affected rows</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<int> ExecuteNonQueryAsync(string sql, CommandType commandType, SqlParameter[] parameters)
         {
             Func<IDbConnection, Task<int>> func = async delegate (IDbConnection connection)
             {
@@ -1076,9 +2180,8 @@ namespace Konak.Dac.Core
 
                 cmd.Parameters.Add(rv);
 
-                if (parameters != null)
-                    foreach (KeyValuePair<String, Object> parameter in parameters)
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
 
                 int res = await cmd.ExecuteNonQueryAsync();
 
@@ -1106,7 +2209,7 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public object ExecuteScalar(string sql)
         {
-            return ExecuteScalar(sql, CommandType.Text, null);
+            return ExecuteScalar(sql, CommandType.Text, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -1119,7 +2222,35 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<object> ExecuteScalarAsync(string sql)
         {
-            return ExecuteScalarAsync(sql, CommandType.Text, null);
+            return ExecuteScalarAsync(sql, CommandType.Text, new SqlParameter[0]);
+        }
+
+        /// <summary>
+        /// Execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public object ExecuteScalar(string sql, SqlParameter[] parameters)
+        {
+            return ExecuteScalar(sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public object ExecuteScalar(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteScalar(sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -1133,7 +2264,49 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public object ExecuteScalar(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return ExecuteScalar(sql, CommandType.Text, parameters);
+            return ExecuteScalar(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public object ExecuteScalar(string sql, dynamic parameters)
+        {
+            return ExecuteScalar(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL command asynchronously and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<object> ExecuteScalarAsync(string sql, SqlParameter[] parameters)
+        {
+            return ExecuteScalarAsync(sql, CommandType.Text, parameters);
+        }
+
+        /// <summary>
+        /// Execute SQL command asynchronously and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<object> ExecuteScalarAsync(string sql, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteScalarAsync(sql, CommandType.Text, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -1147,7 +2320,36 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<object> ExecuteScalarAsync(string sql, List<KeyValuePair<String, Object>> parameters)
         {
-            return ExecuteScalarAsync(sql, CommandType.Text, parameters);
+            return ExecuteScalarAsync(sql, CommandType.Text, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL command asynchronously and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<object> ExecuteScalarAsync(string sql, dynamic parameters)
+        {
+            return ExecuteScalarAsync(sql, CommandType.Text, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public object ExecuteScalar(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteScalar(sql, commandType, parameters.ToSqlParameters());
         }
 
         /// <summary>
@@ -1162,6 +2364,36 @@ namespace Konak.Dac.Core
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public object ExecuteScalar(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
         {
+            return ExecuteScalar(sql, commandType, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public object ExecuteScalar(string sql, CommandType commandType, dynamic parameters)
+        {
+            return ExecuteScalar(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public object ExecuteScalar(string sql, CommandType commandType, SqlParameter[] parameters)
+        {
             SQLBatch<object> b = delegate (IDbConnection connection)
             {
                 SqlConnection conn = connection as SqlConnection;
@@ -1175,8 +2407,7 @@ namespace Konak.Dac.Core
                 cmd.Parameters.Add(rv);
 
                 if (parameters != null)
-                    foreach (KeyValuePair<String, Object> parameter in parameters)
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value == null ? DBNull.Value : parameter.Value);
+                    cmd.Parameters.AddRange(parameters);
 
                 object res = cmd.ExecuteScalar();
 
@@ -1201,7 +2432,52 @@ namespace Konak.Dac.Core
         /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
         /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<object> ExecuteScalarAsync(string sql, CommandType commandType, KeyValuePair<String, Object>[] parameters)
+        {
+            return ExecuteScalarAsync(sql, commandType, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Async version of <see cref="ExecuteScalar"/> to execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public Task<object> ExecuteScalarAsync(string sql, CommandType commandType, List<KeyValuePair<String, Object>> parameters)
+        {
+            return ExecuteScalarAsync(sql, commandType, parameters.ToSqlParameters());
+        }
+
+        /// <summary>
+        /// Async version of <see cref="ExecuteScalar"/> to execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<object> ExecuteScalarAsync(string sql, CommandType commandType, dynamic parameters)
+        {
+            return ExecuteScalarAsync(sql, commandType, DacSqlParametersExtensions.ToSqlParameters(parameters));
+        }
+
+        /// <summary>
+        /// Async version of <see cref="ExecuteScalar"/> to execute SQL command and return value of first column of the first row from results
+        /// </summary>
+        /// <param name="sql">SQL command text to be executed</param>
+        /// <param name="commandType">SQL command type to execute</param>
+        /// <param name="parameters">Parameters of the SQL command</param>
+        /// <returns>Value of first column of the first row</returns>
+        /// <exception cref="SqlExecutionException">Throws if any SqlException has accured</exception>
+        /// <exception cref="SqlExecutionReturnedErrorCodeException">Throws if SQL query or stored procedure has returned non zero code</exception>
+        /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
+        public Task<object> ExecuteScalarAsync(string sql, CommandType commandType, SqlParameter[] parameters)
         {
             Func<IDbConnection, Task<object>> b = async delegate (IDbConnection connection)
             {
@@ -1215,9 +2491,8 @@ namespace Konak.Dac.Core
 
                 cmd.Parameters.Add(rv);
 
-                if (parameters != null)
-                    foreach (KeyValuePair<String, Object> parameter in parameters)
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value == null ? DBNull.Value : parameter.Value);
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
 
                 object res = await cmd.ExecuteScalarAsync();
 
