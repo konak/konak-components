@@ -50,7 +50,7 @@ namespace Konak.Dac.Core
         #endregion
 
         #region private methods
-        internal static void Init()
+        public static void Init()
         {
             DB firstConnection = null;
 
@@ -91,7 +91,7 @@ namespace Konak.Dac.Core
             throw exception;
         }
 
-        internal static void Init(IConfiguration configuration)
+        public static void Init(IConfiguration configuration)
         {
             DB firstConnection = null;
 
