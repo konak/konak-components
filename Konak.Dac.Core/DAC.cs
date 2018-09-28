@@ -309,7 +309,7 @@ namespace Konak.Dac.Core
         }
 
         /// <summary>
-        /// Execute SQL command or stored procedure and fill that data into the dataOut object
+        /// Execute SQL command or stored procedure and fill that data into the dataOut object.
         /// </summary>
         /// <typeparam name="T">A generic type of the object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></typeparam>
         /// <param name="dataOut">Object that will be filled with values. Type of objects that can be passed: <list type="bullet"><item><description>DataTable</description></item><item><description>DataSet</description></item></list></param>
@@ -1648,7 +1648,8 @@ namespace Konak.Dac.Core
         }
 
         /// <summary>
-        /// Execute SQL query and return the number of affected values
+        /// Execute SQL query and return the number of affected values.
+        /// Please note: Do not pass same SqlParameter instance twice to DAC component.
         /// </summary>
         /// <param name="sql">SQL command text to be executed</param>
         /// <param name="parameters">Parameters of the SQL command</param>

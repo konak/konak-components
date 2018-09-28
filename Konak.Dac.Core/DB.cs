@@ -13,6 +13,11 @@ namespace Konak.Dac.Core
     {
         private readonly string _connectionString;
 
+        /// <summary>
+        /// Get connection string of <see cref="DB"/> connection
+        /// </summary>
+        public string ConnectionString { get { return _connectionString; } }
+
         #region constructor
         internal DB(string connectionString)
         {
