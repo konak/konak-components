@@ -38,5 +38,12 @@
 5. In created section add the folowing line:
 	<settings default_connection_string="DefaultConnection" />
 	where the value of the "default_connection_string" property must point to the default connection string used to connect to database.
+6. Call extension method to initialyse component.
+	if it is a web application, open Global.asa file and in Application_Start method call:
+	this.UseKonakDac();
+
+	In other non web applications, you can add to startup Main function this init command:
+	Konak.Dac.Extensions.Configuration.UseKonakDac();
+
 
 That is all.

@@ -1,16 +1,13 @@
 ﻿using Konak.Common.Exceptions;
-using Konak.Dac.Configuration;
 using Konak.Dac.Extensions;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Konak.Dac.Core
+namespace Konak.Dac
 {
     /// <summary>
     /// A proxy class for interaction with database
@@ -18,11 +15,6 @@ namespace Konak.Dac.Core
     public class DAC
     {
         #region Properties
-
-        /// <summary>
-        /// Settings of the DAC
-        /// </summary>
-        internal static DACSettings SETTINGS { get; private set; }
 
         /// <summary>
         /// A list of all available connections to databases, listed in the config file of the application
@@ -36,87 +28,31 @@ namespace Konak.Dac.Core
 
         #endregion
 
-        #region static constructor
-        ///// <summary>
-        ///// Static constructor of DAC class.
-        ///// </summary>
-        ///// <remarks>
-        ///// It is called automatically before the first instance is created or any static members are referenced.
-        ///// </remarks>
-        //static DAC()
-        //{
-        //    Init();
-        //}
-        #endregion
+        #region component Init
 
-        #region private methods
-        public static void Init()
+        public static void Init(List<KeyValuePair<string, string>> connectionStrings, string defaultConnectionKey)
         {
             DB firstConnection = null;
 
-            Exception exception = null;
-
-            CONNECTIONS = new SortedList<string, DB>();
-
-            try
+            foreach (KeyValuePair<string, string> item in connectionStrings)
             {
-                SETTINGS = ConfigSection.GetSection().Settings;
-
-                foreach (ConnectionStringSettings cs in ConfigurationManager.ConnectionStrings)
-                {
-                    DB connection = new DB(cs.ConnectionString);
-
-                    if (firstConnection == null)
-                        firstConnection = connection;
-
-                    CONNECTIONS.Add(cs.Name, new DB(cs.ConnectionString));
-                }
-
-                if (string.IsNullOrEmpty(SETTINGS.DefaultConnectionString))
-                    DEFAULT_CONNECTION = firstConnection;
-                else
-                    DEFAULT_CONNECTION = CONNECTIONS[SETTINGS.DefaultConnectionString];
-
-                return;
-            }
-            catch (GenericException ex)
-            {
-                exception = ex;
-            }
-            catch (Exception ex)
-            {
-                exception = new GenericException(ex);
-            }
-
-            throw exception;
-        }
-
-        public static void Init(IConfiguration configuration)
-        {
-            DB firstConnection = null;
-
-            CONNECTIONS = new SortedList<string, DB>();
-
-            IConfigurationSection connectionStringSection = configuration.GetSection("ConnectionStrings");
-            IConfigurationSection konakDacSettingsSection = configuration.GetSection(ConfigSection.ConfigSectionName);
-
-            IEnumerable<IConfigurationSection> listOfConnectionStrings = connectionStringSection.GetChildren();
-
-            foreach (IConfigurationSection cs in listOfConnectionStrings)
-            {
-                DB connection = new DB(cs.Value);
+                DB connection = new DB(item.Value);
 
                 if (firstConnection == null)
                     firstConnection = connection;
 
-                CONNECTIONS.Add(cs.Key, connection);
+                CONNECTIONS.Add(item.Key, connection);
+
+                if (item.Key.Equals(defaultConnectionKey))
+                    DEFAULT_CONNECTION = connection;
             }
 
-            if (konakDacSettingsSection.Value == null)
+            if (DEFAULT_CONNECTION == null)
                 DEFAULT_CONNECTION = firstConnection;
-            else
-                DEFAULT_CONNECTION = CONNECTIONS[konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName]];
+
+            return;
         }
+
         #endregion
 
         #region public methods
