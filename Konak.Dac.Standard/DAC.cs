@@ -34,6 +34,8 @@ namespace Konak.Dac
         {
             DB firstConnection = null;
 
+            CONNECTIONS = new SortedList<string, DB>();
+
             foreach (KeyValuePair<string, string> item in connectionStrings)
             {
                 DB connection = new DB(item.Value);
