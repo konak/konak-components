@@ -20,6 +20,18 @@ namespace Konak.Dac.Core.Extensions
         /// <returns>Instance of allication builder used to configure application</returns>
         public static IApplicationBuilder UseKonakDac(this IApplicationBuilder app, IConfiguration configuration)
         {
+            UseKonakDac(configuration);
+
+            return app;
+        }
+
+        /// <summary>
+        /// Extension used to initialize Konak.Dac component by providing configuration 
+        /// </summary>
+        /// <param name="configuration">Set of key/value application configuration properies</param>
+        /// <returns>Instance of allication builder used to configure application</returns>
+        public static void UseKonakDac(IConfiguration configuration)
+        {
             IConfigurationSection connectionStringSection = configuration.GetSection("ConnectionStrings");
             IConfigurationSection konakDacSettingsSection = configuration.GetSection(ConfigSection.ConfigSectionName);
 
@@ -33,8 +45,6 @@ namespace Konak.Dac.Core.Extensions
             string defaultConnectionStringKey = konakDacSettingsSection[DACSettings.DefaultConnectionStringAttributeName];
 
             DAC.Init(connectionList, defaultConnectionStringKey);
-
-            return app;
         }
     }
 }
