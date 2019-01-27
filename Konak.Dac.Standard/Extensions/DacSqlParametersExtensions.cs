@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Konak.Dac.Cache;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Reflection;
@@ -71,7 +72,36 @@ namespace Konak.Dac.Extensions
 
                 PropertyInfo propInfo;
 
-                for (int i = 0; i < properties.Length; i++)
+                for (int i = 0, len = properties.Length; i < len; i++)
+                {
+                    propInfo = properties[i];
+                    object val = propInfo.GetValue(parameters);
+                    sqlParameters[i] = new SqlParameter(propInfo.Name, val == null ? DBNull.Value : val);
+                }
+            }
+
+            return sqlParameters;
+        }
+
+        /// <summary>
+        /// Extension methid to transform generic type instance to an array of <see cref="SqlParameter"/>
+        /// </summary>
+        /// <typeparam name="T">Generic  type of the instance</typeparam>
+        /// <param name="parameters">item containing properties interpreted as parameters</param>
+        /// <returns></returns>
+        public static SqlParameter[] ToSqlParameters<T>(this T parameters)
+        {
+            SqlParameter[] sqlParameters = null;
+
+            if (parameters != null)
+            {
+                PropertyInfo[] properties = TypeCache.GetProperties(typeof(T));
+
+                sqlParameters = new SqlParameter[properties.Length];
+
+                PropertyInfo propInfo;
+
+                for (int i = 0, len = properties.Length; i < len; i++)
                 {
                     propInfo = properties[i];
                     object val = propInfo.GetValue(parameters);
