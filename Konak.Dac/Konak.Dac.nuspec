@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Konak.Dac</id>
-    <version>1.1.0.1</version>
+    <version>1.1.1.0</version>
     <title>Konak.Dac</title>
     <authors>Konakov Sergey</authors>
     <owners>Konakov Sergey</owners>
@@ -11,9 +11,9 @@
     <description>Data Access Component that makes it easy to setup and query data from SQL server.</description>
     <releaseNotes>Initial version of component</releaseNotes>
     <copyright>Copyright Konak 2018</copyright>
-    <tags>konak dac sql client</tags>
+    <tags>konak dac sql client orm</tags>
     <dependencies>
-      <dependency id="Konak.Dac.Standard" version="1.1.0.1" />
+      <dependency id="Konak.Dac.Standard" version="1.1.1.0" />
       <dependency id="Konak.Common.Standard" version="1.0.1.1" />
     </dependencies>
   </metadata>
