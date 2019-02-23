@@ -22,29 +22,29 @@ namespace Konak.WindowsServiceCommon
         {
             get
             {
-                return !CH.IsEmpty(this.StartTime);
+                return this.StartTime.HasValue;
             }
         }
 
 
-        public DateTime StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
         public bool IsStopping { get; set; }
         public bool IsPaused { get; set; }
         public TimeSpan LifeSpan
         {
             get
             {
-                if (CH.IsEmpty(this.StartTime))
+                if (!this.StartTime.HasValue)
                     return new TimeSpan(0);
 
-                return (DateTime.Now - this.StartTime);
+                return (DateTime.Now - this.StartTime.Value);
             }
         }
         public string Name
         {
             get
             {
-                if (CH.IsEmpty(_name))
+                if (_name.IsEmpty())
                     return GetType().Name;
 
                 return _name;
@@ -76,8 +76,8 @@ namespace Konak.WindowsServiceCommon
 
         public static void SetThreadName ( string name )
         {
-            if (CH.IsEmpty(Thread.CurrentThread.Name))
-                Thread.CurrentThread.Name = CH.IsEmpty(name) ? string.Empty : name;
+            if (Thread.CurrentThread.Name.IsEmpty())
+                Thread.CurrentThread.Name = name.IsEmpty() ? string.Empty : name;
         }
         #endregion
 

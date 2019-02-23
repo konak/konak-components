@@ -453,7 +453,7 @@ namespace Konak.Dac
         /// <exception cref="GenericException">Throws if any Generic exception has accured</exception>
         public SqlDataReader ExecuteReader(string sql, SqlParameter[] parameters)
         {
-            return ExecuteReader(sql, parameters);
+            return ExecuteReader(sql, parameters, CommandType.Text, true, true, true);
         }
 
         /// <summary>

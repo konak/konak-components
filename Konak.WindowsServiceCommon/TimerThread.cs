@@ -130,7 +130,7 @@ namespace Konak.WindowsServiceCommon
 
             lock (this._lockObject)
             {
-                if (Konak.Common.Helpers.CH.IsEmpty(StartTime))
+                if (!StartTime.HasValue)
                     StartTime = DateTime.Now;
 
                 if (_timer == null)

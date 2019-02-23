@@ -78,7 +78,7 @@ namespace Konak.HttpBrowser
         {
             BrowserNavigationErrorDelegate evt = BrowserNavigationErrorEvent;
 
-            if (CH.IsEmpty(evt)) return;
+            if (evt == null) return;
 
             foreach(Delegate d in evt.GetInvocationList())
             {
@@ -108,21 +108,21 @@ namespace Konak.HttpBrowser
         #region LoadCoockies
         public void LoadCoockies(List<string> coockies)
         {
-            if (!CH.IsEmpty(coockies))
+            if (!coockies.IsEmpty())
                 foreach (string coockie in coockies)
                     _cookieContainer.SetCookies(this.BaseUri, coockie);
         }
 
         public void LoadCoockies(string coockies)
         {
-            if (!CH.IsEmpty(coockies))
+            if (!coockies.IsEmpty())
                 foreach (string coockie in coockies.Split(';'))
                     _cookieContainer.SetCookies(this.BaseUri, coockie);
         }
 
         public void LoadCoockies(CookieContainer container)
         {
-            if (!CH.IsEmpty(container))
+            if (container != null)
                 foreach (Cookie cookie in container.GetCookies(this.BaseUri))
                     this._cookieContainer.Add(cookie);
         }
@@ -182,18 +182,18 @@ namespace Konak.HttpBrowser
         #region AddHeader
         public void AddHeader(string name, string value)
         {
-            if (!CH.IsEmpty(name))
+            if (!name.IsEmpty())
                 this._webHeaders.Set(name, value);
         }
         public void AddHeader(List<KeyValuePair<string, string>> headers)
         {
-            if (!CH.IsEmpty(headers))
+            if (!headers.IsEmpty())
                 foreach (KeyValuePair<string, string> header in headers)
                     this._webHeaders.Add(header.Key, header.Value);
         }
         public void AddHeader(WebHeaderCollection headers)
         {
-            if (!CH.IsEmpty(headers))
+            if (!headers.IsEmpty())
                 foreach (string header in headers)
                     this._webHeaders.Add(header);
         }
@@ -414,7 +414,7 @@ namespace Konak.HttpBrowser
 
             try
             {
-                this.DataEncoding = CH.IsEmpty(resp.CharacterSet) ? (Encoding)this.DefaultEncoding.Clone() : Encoding.GetEncoding(resp.CharacterSet);
+                this.DataEncoding = resp.CharacterSet.IsEmpty() ? (Encoding)this.DefaultEncoding.Clone() : Encoding.GetEncoding(resp.CharacterSet);
             }
             catch (Exception ex)
             {
@@ -473,12 +473,12 @@ namespace Konak.HttpBrowser
 
             bool navigationResult = false;
 
-            if (CH.IsEmpty(this.BaseUri))
+            if (BaseUri == null)
                 return false;
 
-            this.NavigateUri = new Uri(this.BaseUri, requestResource);
+            NavigateUri = new Uri(BaseUri, requestResource);
 
-            this.CleareCurrentPageData();
+            CleareCurrentPageData();
 
             try
             {
@@ -545,7 +545,7 @@ namespace Konak.HttpBrowser
 
             bool navigationResult = false;
 
-            if (CH.IsEmpty(this.BaseUri) || CH.IsEmpty(formAction) || CH.IsEmpty(jsonCall))
+            if (BaseUri == null || formAction.IsEmpty() || jsonCall.IsEmpty())
                 return false;
 
             byte[] postData = this.DefaultEncoding.GetBytes(jsonCall);

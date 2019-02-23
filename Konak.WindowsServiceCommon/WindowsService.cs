@@ -26,7 +26,7 @@ namespace Konak.WindowsServiceCommon
         {
             get
             {
-                return CH.IsEmpty(this._displayName) ? this.ServiceName : this._displayName;
+                return _displayName.IsEmpty() ? ServiceName : _displayName;
             }
             set
             {
@@ -87,8 +87,7 @@ namespace Konak.WindowsServiceCommon
             if (!(mustInstall || mustUninstall))
                 return false;
 
-            if (CH.IsEmpty(serviceInstaller) ||
-                CH.IsEmpty(serviceInstaller.Installers))
+            if (serviceInstaller == null || serviceInstaller.Installers == null)
                 return false;
 
             if (mustUninstall)
@@ -106,7 +105,7 @@ namespace Konak.WindowsServiceCommon
         #region Install
         protected static void Install(Installer serviceInstaller, bool isSilent)
         {
-            if (CH.IsEmpty(serviceInstaller) || CH.IsEmpty(serviceInstaller.Installers)) return;
+            if (serviceInstaller == null || serviceInstaller.Installers == null) return;
 
             StringBuilder names = new StringBuilder();
 
@@ -118,7 +117,7 @@ namespace Konak.WindowsServiceCommon
                     {
                         string serviceName = ((ServiceInstaller)temp).ServiceName;
 
-                        if (!CH.IsEmpty(serviceName))
+                        if (!serviceName.IsEmpty())
                             names.AppendLine("- " + serviceName);
 
                         if (IsRunning(serviceName))
@@ -157,7 +156,7 @@ namespace Konak.WindowsServiceCommon
 
                 while (ex != null)
                 {
-                    if (!CH.IsEmpty(ex.Message))
+                    if (!ex.Message.IsEmpty())
                         msgs.Append(" ").Append(ex.Message);
 
                     ex = ex.InnerException;
@@ -179,7 +178,7 @@ namespace Konak.WindowsServiceCommon
         #region Uninstall
         protected static void Uninstall(Installer serviceInstaller, bool isSilent)
         {
-            if (CH.IsEmpty(serviceInstaller) || CH.IsEmpty(serviceInstaller.Installers))
+            if (serviceInstaller == null || serviceInstaller.Installers == null)
                 return;
 
             StringBuilder names = new StringBuilder();
@@ -193,7 +192,7 @@ namespace Konak.WindowsServiceCommon
                     {
                         string serviceName = ((ServiceInstaller)temp).ServiceName;
 
-                        if (CH.IsEmpty(serviceName))
+                        if (serviceName.IsEmpty())
                             continue;
 
                         names.AppendLine("- " + serviceName);
@@ -234,7 +233,7 @@ namespace Konak.WindowsServiceCommon
 
                 while (ex != null)
                 {
-                    if (!CH.IsEmpty(ex.Message))
+                    if (!ex.Message.IsEmpty())
                         msgs.Append(" ").Append(ex.Message);
                     ex = ex.InnerException;
                 }
@@ -268,7 +267,7 @@ namespace Konak.WindowsServiceCommon
         #endregion
 
         #region IsRunning
-        protected static bool IsRunning ( string serviceName )
+        protected static bool IsRunning(string serviceName)
         {
             try
             {
@@ -284,16 +283,16 @@ namespace Konak.WindowsServiceCommon
         #endregion
 
         #region IsSilent
-        protected static bool IsSilent ( params object[] args )
+        protected static bool IsSilent(params object[] args)
         {
             if (!IsInteractive)
                 return false;
 
             foreach (string arg in args)
             {
-                if (!CH.IsEmpty(arg))
+                if (!arg.IsEmpty())
                 {
-                    switch(arg.Trim().ToLower())
+                    switch (arg.Trim().ToLower())
                     {
                         case "/s":
                         case "/silent":
@@ -313,7 +312,7 @@ namespace Konak.WindowsServiceCommon
         {
             foreach (string arg in args)
             {
-                if (!CH.IsEmpty(arg))
+                if (!arg.IsEmpty())
                 {
                     switch (arg.Trim().ToLower())
                     {
@@ -341,7 +340,7 @@ namespace Konak.WindowsServiceCommon
         {
             foreach (string arg in args)
             {
-                if (!CH.IsEmpty(arg))
+                if (!arg.IsEmpty())
                 {
                     switch (arg.Trim().ToLower())
                     {
@@ -366,7 +365,7 @@ namespace Konak.WindowsServiceCommon
         #region OnContinue
         protected override void OnContinue()
         {
-            if (CH.IsEmpty(WorkerThreads))
+            if (WorkerThreads.IsEmpty())
                 return;
 
             for (int i = 0; i < WorkerThreads.Length; i++)
@@ -379,7 +378,7 @@ namespace Konak.WindowsServiceCommon
         #region OnPause
         protected override void OnPause()
         {
-            if (CH.IsEmpty(WorkerThreads))
+            if (WorkerThreads.IsEmpty())
                 return;
 
             for (int i = 0; i < WorkerThreads.Length; i++)
@@ -392,7 +391,7 @@ namespace Konak.WindowsServiceCommon
         #region Start
         protected virtual void Start(string[] args)
         {
-            if (CH.IsEmpty(WorkerThreads))
+            if (WorkerThreads.IsEmpty())
                 return;
 
             for (int i = 0; i < WorkerThreads.Length; i++)
@@ -404,7 +403,7 @@ namespace Konak.WindowsServiceCommon
         #region Stop
         protected new virtual void Stop()
         {
-            if (CH.IsEmpty(WorkerThreads))
+            if (WorkerThreads.IsEmpty())
                 return;
 
             for (int i = 0; i < WorkerThreads.Length; i++)
@@ -435,9 +434,9 @@ namespace Konak.WindowsServiceCommon
         #endregion
 
         #region Run
-        protected static void Run ( ServiceBase[] services, string[] args )
+        protected static void Run(ServiceBase[] services, string[] args)
         {
-            if (CH.IsEmpty(services))
+            if (services.IsEmpty())
                 return;
 
             if (IsInteractive)

@@ -44,7 +44,6 @@
     <Compile Include="Caching\CacheRepository.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Cryptography\HashGenerator.cs" />
-    <Compile Include="Cryptography\PasswordGenerator.cs" />
     <Compile Include="Helpers\ByteArrayHelpers.cs" />
     <Compile Include="Helpers\CommonHelpers.cs" />
     <Compile Include="Helpers\ConcurrentSortedList.cs" />
@@ -58,7 +57,16 @@
     <Compile Include="Search\SearchIndexKeyBase.cs" />
     <Compile Include="Search\SearchIndexBase.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Konak.Common.Cryptography\Konak.Common.Cryptography.csproj">
+      <Project>{4ab99e9f-5538-470c-bc87-0b0697b15b0f}</Project>
+      <Name>Konak.Common.Cryptography</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Konak.Common.Helpers\Konak.Common.Helpers.csproj">
+      <Project>{f6b6dfa7-3168-43f1-a255-7143b7aca8cd}</Project>
+      <Name>Konak.Common.Helpers</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
