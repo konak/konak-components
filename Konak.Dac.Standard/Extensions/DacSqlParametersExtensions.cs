@@ -16,7 +16,7 @@ namespace Konak.Dac.Extensions
         /// <returns></returns>
         public static SqlParameter[] ToSqlParameters(this DacSqlParameters parameters)
         {
-            return ToSqlParameters(parameters);
+            return ToSqlParameters(parameters.ToArray());
         }
 
         /// <summary>
