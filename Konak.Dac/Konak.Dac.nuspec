@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Konak.Dac</id>
-    <version>1.1.1.0</version>
+    <version>1.1.1.2</version>
     <title>Konak.Dac</title>
     <authors>Konakov Sergey</authors>
     <owners>Konakov Sergey</owners>
@@ -13,7 +13,7 @@
     <copyright>Copyright Konak 2018</copyright>
     <tags>konak dac sql client orm</tags>
     <dependencies>
-      <dependency id="Konak.Dac.Standard" version="1.1.1.0" />
+      <dependency id="Konak.Dac.Standard" version="1.1.1.2" />
       <dependency id="Konak.Common.Standard" version="1.0.1.1" />
     </dependencies>
   </metadata>

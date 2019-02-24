@@ -11,9 +11,9 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>konak dac sql client</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.1.0</Version>
-    <AssemblyVersion>1.1.0.1</AssemblyVersion>
-    <FileVersion>1.1.0.1</FileVersion>
+    <Version>1.1.1.2</Version>
+    <AssemblyVersion>1.1.1.2</AssemblyVersion>
+    <FileVersion>1.1.1.2</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -21,14 +21,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Konak.Dac.Standard" Version="1.1.1.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Konak.Common.Standard\Konak.Common.Standard.csproj" />
-    <ProjectReference Include="..\Konak.Dac.Standard\Konak.Dac.Standard.csproj" />
   </ItemGroup>
 
   <ItemGroup>
