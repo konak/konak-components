@@ -6,9 +6,10 @@
     <Authors>Konakov Sergey</Authors>
     <Company>Konak</Company>
     <Copyright>Konakov Sergey</Copyright>
-    <PackageProjectUrl />
+    <PackageProjectUrl>https://github.com/konak/konak-components/tree/master/Konak.Common.Helpers</PackageProjectUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>ArrayCompare IsEmpty RandomBytes</PackageTags>
+    <RepositoryUrl>https://github.com/konak/konak-components/tree/master/Konak.Common.Helpers</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
