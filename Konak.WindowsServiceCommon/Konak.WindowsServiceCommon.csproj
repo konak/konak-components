@@ -50,6 +50,10 @@
     <Compile Include="WorkerThread.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Konak.Common.Helpers\Konak.Common.Helpers.csproj">
+      <Project>{f6b6dfa7-3168-43f1-a255-7143b7aca8cd}</Project>
+      <Name>Konak.Common.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Konak.Common\Konak.Common.csproj">
       <Project>{7e3bad5c-18b5-49c1-aaa2-e4a9a8a70d2c}</Project>
       <Name>Konak.Common</Name>

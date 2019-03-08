@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Package containing helpers and extensions. Compare byte arrays. Checking if objects are empty. Generating random byte arrays and strings.</Description>
+    <Authors>Konakov Sergey</Authors>
+    <Company>Konak</Company>
+    <Copyright>Konakov Sergey</Copyright>
+    <PackageProjectUrl />
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>ArrayCompare IsEmpty RandomBytes</PackageTags>
+  </PropertyGroup>
+
+</Project>

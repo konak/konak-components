@@ -98,7 +98,7 @@ namespace Konak.WebCrawler
                 {
                     CrawledData data = GetJobData(job);
 
-                    if (CH.IsEmpty(data)) continue;
+                    if (data == null) continue;
 
                     RaiseGetDataEvent(data);
                 }
