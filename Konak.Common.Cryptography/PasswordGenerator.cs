@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Konak.Common.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,28 +8,43 @@ namespace Konak.Common.Cryptography
 {
     public static class PasswordGenerator
     {
-        private static int DEFAULT_MIN_PASSWORD_LENGTH = 8;
-        private static int DEFAULT_MAX_PASSWORD_LENGTH = 10;
+        private const int DEFAULT_MIN_PASSWORD_LENGTH = 8;
+        private const int DEFAULT_MAX_PASSWORD_LENGTH = 10;
 
-        private static int MIN_PASSWORD_LENGTH = 6;
-        private static int MAX_PASSWORD_LENGTH = 20;
+        private static int MIN_PASSWORD_LENGTH = 4;
+        private static int MAX_PASSWORD_LENGTH = 4096;
 
-        private static char[] PASSWORD_CHARS_LCASE = "abcdefgjkmnpqrstwxy".ToCharArray();
-        private static char[] PASSWORD_CHARS_UCASE = "ACDEFGHJKLMNPQRSTWXYZ".ToCharArray();
-        private static char[] PASSWORD_CHARS_NUMERIC = "3456789".ToCharArray();
-        private static char[] PASSWORD_CHARS_SPECIAL = "6LMjkm789H3RS48abG6C73efg6AZ34pqrP57cd89JKnstwDE45QF56xy345N897TWXY9".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_SAFE_LCASE = "abcdefgjkmnpqrstwxy".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_SAFE_UCASE = "ACDEFGHJKLMNPQRSTWXYZ".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_SAFE_NUMERIC = "3456789".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_SAFE_SPECIAL = "~!@#$%&-=+<>".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_SAFE_MIX = "6LMjkm789H3RS48abG6C73efg6AZ34pqrP57cd89JKnstwDE45QF56xy345N897TWXY9".ToCharArray();
+                       
+        private static readonly char[] PASSWORD_CHARS_LCASE = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_UCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_NUMERIC = "1234567890".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_SPECIAL = "~!@#$%^&*()-_=+|{}<>?.,".ToCharArray();
+        private static readonly char[] PASSWORD_CHARS_MIX = "6LMjkm7891UOH3RS48abG6C273efg6A1Z3B4UpqrP57cd829JKnsOhItwVD0E45QF56xy345iNI89VB7TWX1Y9".ToCharArray();
 
-        public static string Generate()
-        {
-            return Generate(DEFAULT_MIN_PASSWORD_LENGTH, DEFAULT_MAX_PASSWORD_LENGTH);
-        }
-
+        /// <summary>
+        /// Generate password with specified length
+        /// </summary>
+        /// <param name="length">Length of the password to generate</param>
+        /// <returns></returns>
         public static string Generate(int length)
         {
             return Generate(length, length);
         }
 
-        public static string Generate(int minLength, int maxLength)
+        /// <summary>
+        /// Generate password
+        /// </summary>
+        /// <param name="minLength">Minimum length of the password</param>
+        /// <param name="maxLength">Maximum length of the password</param>
+        /// <param name="useSafeChars">Use only safe characters. Unsafe characters are the characters that can be visually interpreted as others depending on font used in UI. for example: 1, I and l characters.</param>
+        /// <param name="useSpecialSymbols">Use special symbols like: !@#$% etc.</param>
+        /// <returns></returns>
+        public static string Generate(int minLength = DEFAULT_MIN_PASSWORD_LENGTH, int maxLength = DEFAULT_MAX_PASSWORD_LENGTH, bool useSafeChars = true, bool useSpecialSymbols = false)
         {
             if (minLength < MIN_PASSWORD_LENGTH) minLength = MIN_PASSWORD_LENGTH;
             if (minLength > MAX_PASSWORD_LENGTH) minLength = MAX_PASSWORD_LENGTH;
@@ -38,7 +54,10 @@ namespace Konak.Common.Cryptography
 
             if (minLength > maxLength) maxLength = minLength;
 
-            char[][] charGroups = new char[][] { PASSWORD_CHARS_LCASE, PASSWORD_CHARS_UCASE, PASSWORD_CHARS_NUMERIC, PASSWORD_CHARS_SPECIAL };
+            char[][] charGroups = useSafeChars ?
+                new char[][] { PASSWORD_CHARS_SAFE_LCASE, PASSWORD_CHARS_SAFE_UCASE, PASSWORD_CHARS_SAFE_NUMERIC, useSpecialSymbols ? PASSWORD_CHARS_SAFE_SPECIAL : PASSWORD_CHARS_SAFE_MIX, PASSWORD_CHARS_SAFE_MIX }
+                :
+                new char[][] { PASSWORD_CHARS_LCASE, PASSWORD_CHARS_UCASE, PASSWORD_CHARS_NUMERIC, useSpecialSymbols ? PASSWORD_CHARS_SPECIAL : PASSWORD_CHARS_MIX, PASSWORD_CHARS_MIX };
 
             int[] charsLeftInGroup = new int[charGroups.Length];
             int[] leftGroupsOrder = new int[charGroups.Length];
@@ -52,7 +71,7 @@ namespace Konak.Common.Cryptography
             byte[] seedBytes = new byte[4];
 
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(seedBytes);
+            RandomKeyHelpers.Rng.GetBytes(seedBytes);
 
             int seed = (seedBytes[0] & 0x7f) << 24 | seedBytes[1] << 16 | seedBytes[2] << 8 | seedBytes[3];
 
