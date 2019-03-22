@@ -118,6 +118,21 @@ namespace Konak.Common.Cryptography
         /// <param name="algorithm">Algorithm to be used during hash generation</param>
         /// <param name="key">Key to be used during hash generation</param>
         /// <returns></returns>
+        public static byte[] GetHashBytes(this string data, AlgorithmType algorithm = AlgorithmType.MD5, byte[] key = null)
+        {
+            byte[] d = Encoding.UTF8.GetBytes(data);
+
+            return GetHashBytes(d, algorithm, key);
+        }
+
+
+        /// <summary>
+        /// Extension to get array of bytes of hash, generated for provided data
+        /// </summary>
+        /// <param name="data">Data to generate hash for</param>
+        /// <param name="algorithm">Algorithm to be used during hash generation</param>
+        /// <param name="key">Key to be used during hash generation</param>
+        /// <returns></returns>
         public static byte[] GetHashBytes(this byte[] data, AlgorithmType algorithm = AlgorithmType.MD5, string key = "")
         {
             byte[] k = Encoding.UTF8.GetBytes(key);

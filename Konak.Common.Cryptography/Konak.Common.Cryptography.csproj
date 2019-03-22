@@ -10,6 +10,7 @@
     <RepositoryUrl>https://github.com/konak/konak-components/tree/master/Konak.Common.Cryptography</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Generate Hash Password GetHashBytes GetHashString</PackageTags>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>ArrayCompare IsEmpty RandomBytes</PackageTags>
     <RepositoryUrl>https://github.com/konak/konak-components/tree/master/Konak.Common.Helpers</RepositoryUrl>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
 </Project>
