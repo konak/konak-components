@@ -100,6 +100,18 @@ namespace Konak.Common.Cryptography
         /// Extension to get array of bytes of hash, generated for provided data
         /// </summary>
         /// <param name="data">Data to generate hash for</param>
+        /// <returns></returns>
+        public static byte[] GetHashBytes(this string data)
+        {
+            byte[] d = Encoding.UTF8.GetBytes(data);
+
+            return GetHashBytes(d, AlgorithmType.MD5, new byte[0]);
+        }
+
+        /// <summary>
+        /// Extension to get array of bytes of hash, generated for provided data
+        /// </summary>
+        /// <param name="data">Data to generate hash for</param>
         /// <param name="algorithm">Algorithm to be used during hash generation</param>
         /// <param name="key">Key to be used during hash generation</param>
         /// <returns></returns>
@@ -125,6 +137,15 @@ namespace Konak.Common.Cryptography
             return GetHashBytes(d, algorithm, key);
         }
 
+        /// <summary>
+        /// Extension to get array of bytes of hash, generated for provided data
+        /// </summary>
+        /// <param name="data">Data to generate hash for</param>
+        /// <returns></returns>
+        public static byte[] GetHashBytes(this byte[] data)
+        {
+            return GetHashBytes(data, AlgorithmType.MD5, new byte[0]);
+        }
 
         /// <summary>
         /// Extension to get array of bytes of hash, generated for provided data
