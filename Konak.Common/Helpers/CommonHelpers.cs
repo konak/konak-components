@@ -150,6 +150,53 @@ namespace Konak.Common.Helpers
             return true;
         }
 
+        public static bool PassFilterOnField(int fieldValue, FilterActionType actionType, int[] filterValue)
+        {
+            switch (actionType)
+            {
+                case FilterActionType.equal:
+                    foreach (int val in filterValue)
+                        if (fieldValue == val)
+                            return true;
+
+                    return false;
+
+                case FilterActionType.not_equal:
+                    foreach (int val in filterValue)
+                        if (fieldValue == val)
+                            return false;
+                    break;
+
+                case FilterActionType.greater:
+                    foreach (int val in filterValue)
+                        if (fieldValue <= val)
+                            return false;
+                    break;
+
+                case FilterActionType.greater_or_equal:
+                    foreach (int val in filterValue)
+                        if (fieldValue < val)
+                            return false;
+                    break;
+
+                case FilterActionType.less:
+                    foreach (int val in filterValue)
+                        if (fieldValue >= val)
+                            return false;
+                    break;
+
+                case FilterActionType.less_or_equal:
+                    foreach (int val in filterValue)
+                        if (fieldValue > val)
+                            return false;
+                    break;
+
+                default:
+                    throw new NotImplementedException("Action is not implemented: " + actionType.ToString());
+            }
+
+            return true;
+        }
 
         #endregion
 

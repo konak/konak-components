@@ -26,7 +26,7 @@
 	</configuration>
 	If there is no one create it. Please note, if you are just creating that section, it must be the first section.
 5. Add the folowing line to section <configSections>:
-	<section name="Konak.Dac" type="Konak.Dac.Configuration.ConfigSection, Konak.DAC.Standard, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+	<section name="Konak.Dac" type="Konak.Dac.Configuration.ConfigSection, Konak.DAC.Standard, Culture=neutral, PublicKeyToken=null" />
 4. Create a subsection named "Konak.Dac" inside of section <configuration>:
 	<configuration>
 		...

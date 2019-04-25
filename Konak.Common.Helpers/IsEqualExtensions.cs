@@ -7,9 +7,6 @@ namespace Konak.Common.Helpers
 {
     public static class IsEqualExtensions
     {
-        [DllImport("msvcrt.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern int memcmp(byte[] b1, byte[] b2, long count);
-
         /// <summary>
         /// Extension to compare equality of two byte arrays
         /// </summary>
@@ -20,7 +17,13 @@ namespace Konak.Common.Helpers
         {
             if (firstArray == null || secondArray == null) return firstArray == secondArray;
 
-            return firstArray.Length == secondArray.Length && memcmp(firstArray, secondArray, firstArray.Length) == 0;
+            if (firstArray.Length != secondArray.Length) return false;
+
+            for (int i = 0, len = firstArray.Length; i < len; i++)
+                if (firstArray[i] != secondArray[i])
+                    return false;
+
+            return true;
         }
     }
 }

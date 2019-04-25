@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,7 +49,25 @@ namespace Konak.Common.Search
             FieldName = fieldName;
             Value = value;
 
-            _toString = fieldName + "_" + ((int)actionType).ToString() + "_" + value.ToString();
+            string valueString;
+
+            if(value.GetType().IsArray)
+            {
+                StringBuilder sb = new StringBuilder();
+
+                foreach(var item in (IEnumerable)value)
+                {
+                    sb.Append('_').Append(item.ToString());
+                }
+
+                valueString = sb.ToString();
+            }
+            else
+            {
+                valueString = "_" + value.ToString();
+            }
+
+            _toString = fieldName + "_" + ((int)actionType).ToString() + valueString;
         }
 
         public override string ToString()
